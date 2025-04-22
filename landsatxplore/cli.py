@@ -133,6 +133,17 @@ def search(
     envvar="LANDSATXPLORE_USERNAME",
 )
 @click.option(
+    "--verbose", "-v", is_flag=True, help="Enable verbose output for debugging"
+)
+@click.option(
+    "--token",
+    "-t",
+    type=click.STRING,
+    # required=True,
+    help="API token (instead of password).",
+    envvar="LANDSATXPLORE_TOKEN",
+)
+@click.option(
     "--password",
     "-p",
     type=click.STRING,
@@ -153,15 +164,20 @@ def search(
 @click.option("--skip", is_flag=True, default=False)
 @click.option("--overwrite", is_flag=True, default=False)
 @click.argument("scenes", type=click.STRING, nargs=-1)
-def download(username, password, dataset, output, timeout, skip, overwrite, scenes):
+def download(verbose,username, password, token, dataset, output, timeout, skip, overwrite, scenes):
     """Download one or several scenes."""
-    ee = EarthExplorer(username, password)
+    ee = EarthExplorer(username,password=password, token=token )
     output_dir = os.path.abspath(output)
+    if verbose:
+        click.echo(f"Output directory: {output_dir}")
+        click.echo(f"Download data from {dataset}")
     if dataset and dataset not in DATASETS:
         raise LandsatxploreError(f"`{dataset}` is not a supported dataset.")
     for scene in scenes:
         if not ee.logged_in():
-            ee = EarthExplorer(username, password)
+            ee = EarthExplorer(username,password=password, token =token )
+        if verbose:
+                click.echo(f"\nProcessing scene: {scene} ")
         fname = ee.download(
             scene,
             output_dir,
@@ -172,6 +188,9 @@ def download(username, password, dataset, output, timeout, skip, overwrite, scen
         )
         if skip:
             click.echo(fname)
+        else:
+            click.echo(f"Successfully downloaded: {fname}")
+        break  
     ee.logout()
 
 

@@ -4,7 +4,7 @@ import os
 import re
 import requests
 from tqdm import tqdm
-
+import json
 
 from landsatxplore.api import API
 from landsatxplore.errors import EarthExplorerError
@@ -42,12 +42,23 @@ def _get_token(body):
 class EarthExplorer(object):
     """Access Earth Explorer portal."""
 
-    def __init__(self, username, password,token):
+    def __init__(self, username, password=None,token=None,verbose=False):
         """Access Earth Explorer portal."""
+        self.verbose = verbose
         self.session = requests.Session()
+        self.username = username
+        if self.verbose:
+            print("Initializing EarthExplorer API connection")
         self.login(username, password)
         self.api = API(username, token)
-
+        # if token:
+        #     # Token-based authentication
+        #     print('here token')
+        #     self.api = API(username, token)
+        # else:
+        #     # Password-based authentication
+        #     self.login(username, password)
+        #     self.api = API(username, password)
     def logged_in(self):
         """Check if the log-in has been successfull based on session cookies."""
         eros_sso = self.session.cookies.get("EROS_SSO_production_secure")
@@ -63,7 +74,6 @@ class EarthExplorer(object):
             "csrf": csrf,
         }
         rsp = self.session.post(EE_LOGIN_URL, data=payload, allow_redirects=True)
-
         if not self.logged_in():
             raise EarthExplorerError("EE: login failed.")
 
