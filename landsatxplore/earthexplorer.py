@@ -27,7 +27,7 @@ DATA_PRODUCTS = {
     # Level 2 datasets
     "landsat_tm_c2_l2": ["5e83d11933473426", "5e83d11933473426", "632312ba6c0988ef"],
     "landsat_etm_c2_l2": ["5e83d12aada2e3c5", "5e83d12aed0efa58", "632311068b0935a8"],
-    "landsat_ot_c2_l2": ["5e83d14f30ea90a9", "5e83d14fec7cae84", "632210d4770592cf"]
+    "landsat_ot_c2_l2": ["5e83d14fec7cae84", "5e83d14f30ea90a9", "632210d4770592cf"]
 }
 
 def _get_token(body):
